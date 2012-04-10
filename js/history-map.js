@@ -15,5 +15,15 @@
     zoom: 4,
     layers: [tiles]
   });
+  
+  $('.geolocate-user').click(function(e) {
+    e.preventDefault();
+    map.locate({
+      watch: true,
+      setView: true,
+      maxZoom: 10,
+      enableHighAccuracy: true
+    });
+  });
 
 })(jQuery);
