@@ -37,6 +37,16 @@ a:visited {
   background-repeat: no-repeat;
 }
 
+.icon-walk {
+  display: inline-block;
+  vertical-align: text-top;
+  background-image: url("img/walkingtour-no-marker.png");
+  background-position: -4px -16px;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+}
+
 .popup-table {
   margin-top: 1em;
 }
