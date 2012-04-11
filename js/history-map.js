@@ -115,6 +115,7 @@ $(document).ready(function() {
     $dirContainer.find('.directions').click(function(e) {
       e.preventDefault();
       if ($(this).hasClass('closed')) {
+        $dirContainer.addClass('opened');
         $(this).addClass('opened').removeClass('closed').removeClass('btn');
         if (!$(this).hasClass('has-opened')) {
           map.panBy(new L.Point(200, 0));
@@ -124,6 +125,7 @@ $(document).ready(function() {
     });
     $dirContainer.find('a.close').click(function(e) {
       e.preventDefault();
+      $dirContainer.removeClass('opened');
       $dirContainer.find('.directions').removeClass('opened').addClass('closed').addClass('btn');
       e.stopPropagation();
     });

@@ -74,6 +74,9 @@ a:visited {
   right: 10px;
   z-index: 50;
 }
+.directions-container.opened {
+  top: 60px;
+}
 .directions-container .directions {
   padding: 5px;
 }
@@ -89,7 +92,8 @@ a:visited {
 }
 .directions-container .directions.opened {
   width: 380px;
-  max-height: 70%;
+  height: 98%;
+  overflow-x: scroll;
   background: #EEEEEE;
   background: rgba(255, 255, 255, 0.75);
 }
