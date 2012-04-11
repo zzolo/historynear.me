@@ -24,3 +24,23 @@ a:visited {
   background-position: 0px 0px;
   background-repeat: no-repeat;
 }
+
+
+@media all and (max-width: 767px) {
+
+  #history-map {
+    top: 45px;
+  }
+  input[class*="span"], select[class*="span"], textarea[class*="span"], .uneditable-input {
+    display: inline;
+    width: 70%;
+  }
+}
+
+@media all and (max-width: 480px) {
+  .modal.fade.in {
+    top: 10px;
+    max-height: 380px;
+    overflow: scroll;
+  }
+}
