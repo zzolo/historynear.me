@@ -85,10 +85,35 @@ $(document).ready(function() {
     return output;
   };
   
+  // Remove directions
+  function removeDirections() {
+    $('.directions-container').remove();
+  };
+  
   // Handle directions
   function handleDirections(data) {
-    //console.log(data);
-    $('body').append('<div class="directions-container"><div class="directions closed btn"></div></div>');
+    removeDirections();
+    
+    var i;
+    var header = '<h3>Driving Directions</h3>';
+    var footer = '<p>Directions courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png"></p>';
+    var table = '<table class="table table-striped">';
+    table += '<thead><tr><th>Distance</th><th>' + data.distance + ' miles</th></tr>';
+    table += '<tr><th>Time</th><th>' + data.formattedTime + ' hours</th></tr></thead>';
+    table += '<tbody>';
+    
+    for (i in data.maneuvers) {
+      table += makeTableRow('<img src="' + data.maneuvers[i].iconUrl + '">', data.maneuvers[i].narrative);
+    }
+    
+    table += '</tbody></table>';
+    
+    var $dirContainer = $('<div class="directions-container"><div class="directions closed btn">' + header + table + footer + '</div></div>');
+    $dirContainer.find('.directions').click(function() {
+      $(this).addClass('opened').removeClass('closed').removeClass('btn');
+      map.panBy(new L.Point(200, 0));
+    });
+    $('body').append($dirContainer);
   };
 
   // Function to handle turning a point into 
@@ -122,7 +147,6 @@ $(document).ready(function() {
         displayError('We were unable to find any historical sites.');
         return;
       }
-      //console.log(data);
       
       // Aggregate and format
       var formatted = {};
@@ -138,7 +162,6 @@ $(document).ready(function() {
         formatted[data[r].hrb].address = data[r].street__ + ' ' + data[r].street_name + ', ' + data[r].city + ', ' + data[r].zip_code;
         formatted[data[r].hrb].style = data[r].architectural_style || formatted[data[r].hrb].style || {};
       }
-      //console.log(formatted);
       
       // Add markers
       var f;
@@ -163,8 +186,6 @@ $(document).ready(function() {
       var closestPoint = $.parseJSON(data[0].geomjson);
       var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + lat + ',' + lon + '&to=' + closestPoint.coordinates[1] + ',' + closestPoint.coordinates[0] + '&callback=?';
       $.getJSON(directionCall, function(data) {
-        //console.log(data);
-        
         // Draw route
         if (typeof data.route.legs[0] != 'undefined' && typeof data.route.legs[0].maneuvers != 'undefined') {
           var parts = data.route.legs[0].maneuvers;
@@ -208,6 +229,8 @@ $(document).ready(function() {
   $('.geolocate-user').click(function(e) {
     e.preventDefault();
     loading();
+    removeDirections();
+    
     map.locate({
       setView: true,
       maxZoom: 10,
@@ -217,25 +240,22 @@ $(document).ready(function() {
   map.on('locationfound', function(e) {
     var position = e.latlng;
     getHistory(e.latlng.lng, e.latlng.lat, function(data) {
-      //console.log(data);
     });
   });
   
   // Geolocate address
   $('.geocode-string').click(function(e) {
     loading();
+    removeDirections();
     e.preventDefault();
     
     // Geocode with Mapquest
     $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + encodeURI($('.geocode-value').val()), function(value) {
-    
-      //console.log(value);
       // Use first response
       value = value[0];
       
       // Check response
       if (value === undefined) {
-        console.log('here');
         displayError('We were unable turn your search terms, <strong>' + $('.geocode-value').val() + '</strong>, into a geographical location.  Please be more specific, such as including zip code.');
       }
       else {
@@ -252,7 +272,6 @@ $(document).ready(function() {
         
         // Get history
         getHistory(value.lon, value.lat, function(data) {
-          //console.log(data);
         });
       }
     });
