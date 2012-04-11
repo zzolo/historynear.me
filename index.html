@@ -56,10 +56,14 @@
         </div>
         
         <form class="well form-inline">
-          <label>Search address</label>
-          <input type="text" class="span3" placeholder="Enter address">
-          <button type="submit" class="btn"><i class="icon-search"></i></button>
-          <button type="submit" class="btn geolocate-user"><i class="icon-geolocate"></i></button>
+          <div><label>Search address</label></div>
+          <input type="text" class="span2 geocode-value" placeholder="Enter address">
+          <button type="submit" class="btn geocode-string" title="Search for an address or geographical feature">
+            <i class="icon-search"></i>
+          </button>
+          <button type="submit" class="btn geolocate-user" title="Use your current location">
+            <i class="icon-geolocate"></i>
+          </button>
         </form>
       </div>
       

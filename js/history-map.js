@@ -3,8 +3,9 @@
  */
 
 (function($) {
+$(document).ready(function() {
 
-  // Make map // ""
+  // Make map
   var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
     attribution: 'Map imagery from <a href="http://mapbox.com">Mapbox</a>', 
     subdomains: ["a", "b", "c", "d"]
@@ -16,6 +17,7 @@
     layers: [tiles]
   });
   
+  // Geolocate user
   $('.geolocate-user').click(function(e) {
     e.preventDefault();
     map.locate({
@@ -25,5 +27,36 @@
       enableHighAccuracy: true
     });
   });
+  
+  // Geolocate address
+  $('.geocode-string').click(function(e) {
+    e.preventDefault();
+    console.log($('.geocode-value').val());
+    // Get API response
+    $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + $('.geocode-value').val(), function (value) {
+    
+    console.log(value);
+      // Use first response
+      value = value[0];
+      
+      // Check response
+      if (value === undefined) {
+        // handle error
+      }
+      else {
+        // Adjust zoom level based on geography
+        if (value.type == 'state' || 
+            value.type == 'county' || 
+            value.type == 'maritime'  || 
+            value.type == 'country' ||
+            value.type == 'administrative') {
+          map.setView(new L.LatLng(value.lat, value.lon), 8);
+        } else {
+          map.setView(new L.LatLng(value.lat, value.lon), 10);
+        }
+      }
+    });
+  });
 
+});
 })(jQuery);
