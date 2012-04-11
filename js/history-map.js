@@ -27,12 +27,18 @@ $(document).ready(function() {
       enableHighAccuracy: true
     });
   });
+  map.on('locationfound', function(e) {
+    var position = e.latlng;
+    
+    var directionCall = 'http://open.mapquestapi.com/directions/v0/route?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + e.latlng.lat + ',' + e.latlng.lon + '&to=38.84457,-77.078222&callback=?';
+  });
   
   // Geolocate address
   $('.geocode-string').click(function(e) {
     e.preventDefault();
     console.log($('.geocode-value').val());
-    // Get API response
+    
+    // Geocode with Mapquest
     $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + $('.geocode-value').val(), function (value) {
     
     console.log(value);
