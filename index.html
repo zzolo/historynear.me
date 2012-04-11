@@ -23,60 +23,41 @@
 </head>
 <body>
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
-  <header>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-     
-          <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-     
-          <!-- Be sure to leave the brand out there if you want it shown -->
-          <a class="brand" href="#">HistoryNear.me</a>
-     
-          <!-- Everything you want hidden at 940px or less, place within here -->
-          <div class="nav-collapse">
-            <!-- .nav, .navbar-search, .navbar-form, etc -->
-          </div>
-     
-        </div>
-      </div>
-    </div>
-  </header>
   
-  <div <div class="container" role="main">
-    <div class="row">
-      <div class="span4">
-        <div class="page-header">
-          <h1>HistoryNear.me</h1>
-        </div>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
         
-        <form class="well form-inline">
-          <div><label>Search address</label></div>
-          <input type="text" class="span2 geocode-value" placeholder="Enter address">
-          <button type="submit" class="btn geocode-string" title="Search for an address or geographical feature">
-            <i class="icon-search"></i>
-          </button>
-          <button type="submit" class="btn geolocate-user" title="Use your current location">
-            <i class="icon-geolocate"></i>
-          </button>
-        </form>
-      </div>
-      
-      <div class="span8">
-        <div id="history-map"></div>
-      
+        <a class="brand" href="#">HistoryNear.me</a>
+        
+        <div class="nav-collapse collapse">
+          <form class="navbar-form pull-left">
+            <button type="submit" class="btn geolocate-user btn-success" title="Use your current location">
+              <i class="icon-geolocate"></i>
+            </button>
+            <input type="text" class="span2 geocode-value" placeholder="Enter address">
+            <button type="submit" class="btn geocode-string" title="Search for an address or geographical feature">
+              <i class="icon-search"></i>
+            </button>
+          </form>
+        
+          <ul class="nav">
+            <li class="">
+              <a href="#">About</a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
   
-  <footer>
-    <p>Directions Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png"></p>
-  </footer>
+  <div id="history-map"></div>
+  
 
   <!-- scripts -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>

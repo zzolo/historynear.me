@@ -60,7 +60,7 @@ $(document).ready(function() {
         formatted[data[r].hrb].comm_plan_area = data[r].comm_plan_area || formatted[data[r].hrb].comm_plan_area || {};
         formatted[data[r].hrb].address = data[r].street__ + ' ' + data[r].street_name + ', ' + data[r].city + ', ' + data[r].zip_code;
       }
-      console.log(formatted);
+      //console.log(formatted);
       
       // Add markers
       var f;
@@ -78,7 +78,7 @@ $(document).ready(function() {
       
       var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + lat + ',' + lon + '&to=' + closestPoint.coordinates[1] + ',' + closestPoint.coordinates[0] + '&callback=?';
       $.getJSON(directionCall, function(data) {
-        console.log(data);
+        //console.log(data);
         
         // Draw route
         var parts = data.route.legs[0].maneuvers;
@@ -98,7 +98,7 @@ $(document).ready(function() {
 
   // Make map
   var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
-    attribution: 'Map imagery from <a href="http://mapbox.com">Mapbox</a>', 
+    attribution: 'Map imagery from <a href="http://mapbox.com">Mapbox</a>; Map data &copy; OpenStreetMap contributors, CC-BY-SA; Directions courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">', 
     subdomains: ["a", "b", "c", "d"]
   });
   
@@ -121,7 +121,7 @@ $(document).ready(function() {
   map.on('locationfound', function(e) {
     var position = e.latlng;
     getHistory(e.latlng.lng, e.latlng.lat, function(data) {
-      console.log(data);
+      //console.log(data);
     });
   });
   
@@ -132,7 +132,7 @@ $(document).ready(function() {
     // Geocode with Mapquest
     $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + encodeURI($('.geocode-value').val()), function(value) {
     
-    console.log(value);
+      //console.log(value);
       // Use first response
       value = value[0];
       
