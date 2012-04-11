@@ -31,11 +31,14 @@ $(document).ready(function() {
   
   // Display error
   function displayError(message) {
-    var output = '<div class="alert">' +
+    var $output = $('<div class="alert">' +
       '<a class="close" data-dismiss="alert">&times;</a>' + 
       '<strong>Warning!</strong> ' + message +
-      '</div>';
-    $('body').append(output);
+      '</div>').hide();
+    $('body').append($output);
+    $output.fadeIn().delay(3000).fadeOut('slow', function() {
+      $(this).remove();
+    });
   };
 
   // Remove Markers
