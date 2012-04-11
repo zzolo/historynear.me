@@ -7,6 +7,7 @@ $(document).ready(function() {
   // Top level vars
   var cartoRequest = 'http://zzolo.cartodb.com/api/v2/sql?q=';
   var map;
+  var markers = {};
   
   // Map icons
   var iconSet = L.Icon.extend({
@@ -20,12 +21,50 @@ $(document).ready(function() {
   var iconFinish = new iconSet('img/historicalquarter-white.png');
   var iconHistory = new iconSet('img/historicalquarter.png');
 
+  // Remove Markers
+  function removeMarkers() {
+    var i;
+    for (i in markers) {
+      map.removeLayer(markers[i]);
+    }
+  };
+  
+  // Make a table row
+  function makeTableRow(label, value) {
+    if (typeof value == 'string') {
+      return '<tr><td>' + label + '</td><td><strong>' + value + '</strong></td></tr>';
+    }
+    return '';
+  }
+  
+  // Format popup
+  function formatPopup(data, closest) {
+    var output = '';
+    
+    output += (closest) ? ' <span class="label label-info float-right">closest</span>' : '';
+    output += '<h3>' + data.name + '</h3>';
+    
+    output += '<table class="popup-table table table-striped">';
+    
+    output += makeTableRow('Neighborhood', data.neighborhood);
+    output += makeTableRow('Date designated', data.date_designated);
+    output += makeTableRow('Year built', data.year);
+    output += makeTableRow('Architectural style', data.style);
+    output += makeTableRow('Address', data.address);
+    
+    output += '</table>';
+    
+    return output;
+  };
+
   // Function to handle turning a point into 
   function getHistory(lon, lat, callback) {
+    removeMarkers();
+  
     // Create start location
-    var originMarker = new L.Marker(new L.LatLng(lat, lon), { icon: iconStart });
-    map.addLayer(originMarker);
-    originMarker.bindPopup('<strong>Start here</strong>');
+    markers.originMarker = new L.Marker(new L.LatLng(lat, lon), { icon: iconStart });
+    map.addLayer(markers.originMarker);
+    markers.originMarker.bindPopup('<strong>Start here</strong>');
   
     // Create CartoDB query
     var query = "SELECT " +
@@ -46,6 +85,7 @@ $(document).ready(function() {
       else {
         return;
       }
+      //console.log(data);
       
       // Aggregate and format
       var formatted = {};
@@ -59,23 +99,30 @@ $(document).ready(function() {
         formatted[data[r].hrb].year = data[r].year || formatted[data[r].hrb].year || {};
         formatted[data[r].hrb].comm_plan_area = data[r].comm_plan_area || formatted[data[r].hrb].comm_plan_area || {};
         formatted[data[r].hrb].address = data[r].street__ + ' ' + data[r].street_name + ', ' + data[r].city + ', ' + data[r].zip_code;
+        formatted[data[r].hrb].style = data[r].architectural_style || formatted[data[r].hrb].style || {};
       }
       //console.log(formatted);
       
       // Add markers
       var f;
+      markers.formatted = markers.formatted || {};
       for (f in formatted) {
-        formatted[f].marker = new L.Marker(new L.LatLng(formatted[f].geo.coordinates[1], formatted[f].geo.coordinates[0]), { icon: iconHistory });
-        map.addLayer(formatted[f].marker);
-        formatted[f].marker.bindPopup('<h3>' + formatted[f].name + '</h3>');
+        var closest = (f == data[0].hrb) ? true : false;
+        var markerOptions = closest ? { icon: iconFinish } : { icon: iconHistory };
+        markers.formatted[f] = markers.formatted[f] || {};
+        markers.formatted[f].marker = new L.Marker(new L.LatLng(formatted[f].geo.coordinates[1], formatted[f].geo.coordinates[0]), markerOptions);
+        map.addLayer(markers.formatted[f].marker);
+        
+        if (closest) {
+          markers.formatted[f].marker.bindPopup(formatPopup(formatted[f], closest)).openPopup();
+        }
+        else {
+          markers.formatted[f].marker.bindPopup(formatPopup(formatted[f], closest));
+        }
       }
       
       // Get directions from mapquest
       var closestPoint = $.parseJSON(data[0].geomjson);
-      var closestMarker = new L.Marker(new L.LatLng(closestPoint.coordinates[1], closestPoint.coordinates[0]), { icon: iconFinish });
-      map.addLayer(closestMarker);
-      closestMarker.bindPopup('<strong>End here</strong>');
-      
       var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + lat + ',' + lon + '&to=' + closestPoint.coordinates[1] + ',' + closestPoint.coordinates[0] + '&callback=?';
       $.getJSON(directionCall, function(data) {
         //console.log(data);
@@ -98,7 +145,8 @@ $(document).ready(function() {
 
   // Make map
   var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-light/{z}/{x}/{y}.png', {
-    subdomains: ["a", "b", "c", "d"]
+    subdomains: ["a", "b", "c", "d"],
+    maxZoom: 17
   });
   
   map = new L.Map('history-map', {

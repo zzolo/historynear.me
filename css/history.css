@@ -4,6 +4,12 @@
 a:visited {
   color: #08C;
 }
+
+.float-right {
+  float: right;
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
  
 #history-map {
   width: 100%;
@@ -23,6 +29,13 @@ a:visited {
   background-image: url("img/icon-geolocate.png");
   background-position: 0px 0px;
   background-repeat: no-repeat;
+}
+
+.popup-table {
+  margin-top: 1em;
+}
+.popup-table td {
+  width: 50%;
 }
 
 
