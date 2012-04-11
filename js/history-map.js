@@ -33,7 +33,7 @@ $(document).ready(function() {
   function displayError(message) {
     var $output = $('<div class="alert">' +
       '<a class="close" data-dismiss="alert">&times;</a>' + 
-      '<strong>Warning!</strong> ' + message +
+      '<strong><i class="icon-exclamation-sign"></i> Warning!</strong> ' + message +
       '</div>').hide();
     $('body').append($output);
     $output.fadeIn().delay(3000).fadeOut('slow', function() {
@@ -68,18 +68,21 @@ $(document).ready(function() {
   // Format popup
   function formatPopup(data, closest) {
     var output = '';
+    /* TODO: add direction links
+    var $dLink = $('<span class="label label-success float-right">directions</span>').click(function(e) {
+      map.removeLayer(markers.routeDraw);
+      console.log(data);
+    });
+    */
     
     output += (closest) ? ' <span class="label label-info float-right">closest</span>' : '';
     output += '<h3>' + data.name + '</h3>';
-    
     output += '<table class="popup-table table table-striped">';
-    
     output += makeTableRow('Neighborhood', data.neighborhood);
     output += makeTableRow('Date designated', data.date_designated);
     output += makeTableRow('Year built', data.year);
     output += makeTableRow('Architectural style', data.style);
     output += makeTableRow('Address', data.address);
-    
     output += '</table>';
     
     return output;
@@ -125,6 +128,37 @@ $(document).ready(function() {
       e.stopPropagation();
     });
     $('body').append($dirContainer);
+  };
+  
+  // Get directions
+  function getDirections(sLon, sLat, eLon, eLat, callback) {
+    // Get directions from mapquest
+    loading();
+    var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + sLat + ',' + sLon + '&to=' + eLat + ',' + eLon + '&callback=?';
+    $.getJSON(directionCall, function(data) {
+      // Draw route
+      if (typeof data.route.legs[0] != 'undefined' && typeof data.route.legs[0].maneuvers != 'undefined') {
+        var parts = data.route.legs[0].maneuvers;
+        var m;
+        var path = [];
+        for (m in parts) {
+          path.push(new L.LatLng(parts[m].startPoint.lat, parts[m].startPoint.lng));
+        }
+        markers.routeDraw = new L.Polyline(path, {color: '#49AFCD'});
+        map.fitBounds(new L.LatLngBounds(path));
+        map.addLayer(markers.routeDraw);
+        
+        // Create written directions
+        handleDirections(data.route.legs[0]);
+      }
+      else {
+        displayError('We were unable to find walking directions.  Try a different address or somewhere closer.');
+        map.setView(new L.LatLng(eLat, eLon), 15);
+      }
+      
+      stopLoading();
+      callback.apply(this, [data]);
+    });
   };
 
   // Function to handle turning a point into 
@@ -193,33 +227,8 @@ $(document).ready(function() {
       }
       
       // Get directions from mapquest
-      loading();
       var closestPoint = $.parseJSON(data[0].geomjson);
-      var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + lat + ',' + lon + '&to=' + closestPoint.coordinates[1] + ',' + closestPoint.coordinates[0] + '&callback=?';
-      $.getJSON(directionCall, function(data) {
-        // Draw route
-        if (typeof data.route.legs[0] != 'undefined' && typeof data.route.legs[0].maneuvers != 'undefined') {
-          var parts = data.route.legs[0].maneuvers;
-          var m;
-          var path = [];
-          for (m in parts) {
-            path.push(new L.LatLng(parts[m].startPoint.lat, parts[m].startPoint.lng));
-          }
-          var routeDraw = new L.Polyline(path, {color: '#49AFCD'});
-          map.fitBounds(new L.LatLngBounds(path));
-          map.addLayer(routeDraw);
-          
-          // Create written directions
-          handleDirections(data.route.legs[0]);
-        }
-        else {
-          displayError('We were unable to find walking directions.  Try a different address or somewhere closer.');
-          map.setView(new L.LatLng(closestPoint.coordinates[1], closestPoint.coordinates[0]), 15);
-        }
-        
-        stopLoading();
-        callback.apply(this, [data]);
-      });
+      getDirections(lon, lat, closestPoint.coordinates[0], closestPoint.coordinates[1], callback);
     });
   }
 
