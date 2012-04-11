@@ -44,6 +44,14 @@ $(document).ready(function() {
     for (i in markers) {
       map.removeLayer(markers[i]);
     }
+    if (typeof markers.formatted != 'undefined') {
+      var f;
+      for (f in markers.formatted) {
+        if (markers.formatted[f].marker) {
+          map.removeLayer(markers.formatted[f].marker);
+        }
+      }
+    }
   };
   
   // Make a table row
