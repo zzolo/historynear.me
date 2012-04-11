@@ -20,6 +20,23 @@ $(document).ready(function() {
   var iconStart = new iconSet();
   var iconFinish = new iconSet('img/historicalquarter-white.png');
   var iconHistory = new iconSet('img/historicalquarter.png');
+  
+  // Let the user know things are loading
+  function loading() {
+    $('.loading-placeholder').addClass('loading');
+  };
+  function stopLoading() {
+    $('.loading-placeholder').removeClass('loading');
+  };
+  
+  // Display error
+  function displayError(message) {
+    var output = '<div class="alert">' +
+      '<a class="close" data-dismiss="alert">&times;</a>' + 
+      '<strong>Warning!</strong> ' + message +
+      '</div>';
+    $('body').append(output);
+  };
 
   // Remove Markers
   function removeMarkers() {
@@ -56,9 +73,16 @@ $(document).ready(function() {
     
     return output;
   };
+  
+  // Handle directions
+  function handleDirections(data) {
+
+    $('body').append('<div class="directions-container"><div class="directions closed btn"></div></div>');
+  };
 
   // Function to handle turning a point into 
   function getHistory(lon, lat, callback) {
+    loading();
     removeMarkers();
   
     // Create start location
@@ -79,10 +103,12 @@ $(document).ready(function() {
     
     // Get nearest sites
     $.getJSON(request + '&callback=?', function(data) {
+      stopLoading();
       if (typeof data.rows != 'undefined') {
         data = data.rows;
       }
       else {
+        displayError('We were unable to find any historical sites.');
         return;
       }
       //console.log(data);
@@ -122,22 +148,33 @@ $(document).ready(function() {
       }
       
       // Get directions from mapquest
+      loading();
       var closestPoint = $.parseJSON(data[0].geomjson);
       var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + lat + ',' + lon + '&to=' + closestPoint.coordinates[1] + ',' + closestPoint.coordinates[0] + '&callback=?';
       $.getJSON(directionCall, function(data) {
         //console.log(data);
         
         // Draw route
-        var parts = data.route.legs[0].maneuvers;
-        var m;
-        var path = [];
-        for (m in parts) {
-          path.push(new L.LatLng(parts[m].startPoint.lat, parts[m].startPoint.lng));
+        if (typeof data.route.legs[0] != 'undefined' && typeof data.route.legs[0].maneuvers != 'undefined') {
+          var parts = data.route.legs[0].maneuvers;
+          var m;
+          var path = [];
+          for (m in parts) {
+            path.push(new L.LatLng(parts[m].startPoint.lat, parts[m].startPoint.lng));
+          }
+          var routeDraw = new L.Polyline(path, {color: '#49AFCD'});
+          map.fitBounds(new L.LatLngBounds(path));
+          map.addLayer(routeDraw);
+          
+          // Create written directions
+          handleDirections(data.route.legs[0]);
         }
-        var routeDraw = new L.Polyline(path, {color: '#49AFCD'});
-        map.fitBounds(new L.LatLngBounds(path));
-        map.addLayer(routeDraw);
+        else {
+          displayError('We were unable to find walking directions.  Try a different address or somewhere closer.');
+          map.setView(new L.LatLng(closestPoint.coordinates[1], closestPoint.coordinates[0]), 15);
+        }
         
+        stopLoading();
         callback.apply(this, [data]);
       });
     });
@@ -146,6 +183,7 @@ $(document).ready(function() {
   // Make map
   var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-light/{z}/{x}/{y}.png', {
     subdomains: ["a", "b", "c", "d"],
+    attribution: '',
     maxZoom: 17
   });
   
@@ -158,8 +196,8 @@ $(document).ready(function() {
   // Geolocate user
   $('.geolocate-user').click(function(e) {
     e.preventDefault();
+    loading();
     map.locate({
-      watch: true,
       setView: true,
       maxZoom: 10,
       enableHighAccuracy: true
@@ -174,6 +212,7 @@ $(document).ready(function() {
   
   // Geolocate address
   $('.geocode-string').click(function(e) {
+    loading();
     e.preventDefault();
     
     // Geocode with Mapquest
@@ -185,7 +224,8 @@ $(document).ready(function() {
       
       // Check response
       if (value === undefined) {
-        // handle error
+        console.log('here');
+        displayError('We were unable turn your search terms, <strong>' + $('.geocode-value').val() + '</strong>, into a geographical location.  Please be more specific, such as including zip code.');
       }
       else {
         // Adjust zoom level based on geography
