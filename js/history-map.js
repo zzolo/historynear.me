@@ -97,14 +97,14 @@ $(document).ready(function() {
   }
 
   // Make map
-  var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png', {
+  var tiles = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/mapbox.mapbox-light/{z}/{x}/{y}.png', {
     attribution: 'Map imagery from <a href="http://mapbox.com">Mapbox</a>; Map data &copy; OpenStreetMap contributors, CC-BY-SA; Directions courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">', 
     subdomains: ["a", "b", "c", "d"]
   });
   
   map = new L.Map('history-map', {
-    center: new L.LatLng(46.479553, -93.98589980000002),
-    zoom: 4,
+    center: new L.LatLng(32.73, -117.17),
+    zoom: 11,
     layers: [tiles]
   });
   
