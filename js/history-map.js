@@ -76,7 +76,7 @@ $(document).ready(function() {
   
   // Handle directions
   function handleDirections(data) {
-
+    //console.log(data);
     $('body').append('<div class="directions-container"><div class="directions closed btn"></div></div>');
   };
 
