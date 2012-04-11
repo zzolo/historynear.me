@@ -98,7 +98,7 @@ $(document).ready(function() {
     removeDirections();
     
     var i;
-    var header = '<a class="close">&times;</a><h3>Driving Directions</h3>';
+    var header = '<a class="close">&times;</a><h3>Walking Directions</h3>';
     var footer = '<p>Directions courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png"></p>';
     var table = '<table class="table table-striped">';
     table += '<thead><tr><th>Distance</th><th>' + data.distance + ' miles</th></tr>';
