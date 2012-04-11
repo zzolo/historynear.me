@@ -88,9 +88,8 @@ a:visited {
   display: none;
 }
 .directions-container .directions.opened {
-  width: 400px;
+  width: 380px;
   max-height: 80%;
-  overflow: scroll;
   background: #EEEEEE;
   background: rgba(255, 255, 255, 0.75);
 }
@@ -111,7 +110,9 @@ a:visited {
   .modal.fade.in {
     top: 10px;
     max-height: 380px;
-    overflow: scroll;
+  }
+  .directions-container .directions.opened {
+    width: 95%;
   }
 }
 

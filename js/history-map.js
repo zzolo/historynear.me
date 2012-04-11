@@ -95,7 +95,7 @@ $(document).ready(function() {
     removeDirections();
     
     var i;
-    var header = '<h3>Driving Directions</h3>';
+    var header = '<a class="close">&times;</a><h3>Driving Directions</h3>';
     var footer = '<p>Directions courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png"></p>';
     var table = '<table class="table table-striped">';
     table += '<thead><tr><th>Distance</th><th>' + data.distance + ' miles</th></tr>';
@@ -109,9 +109,20 @@ $(document).ready(function() {
     table += '</tbody></table>';
     
     var $dirContainer = $('<div class="directions-container"><div class="directions closed btn">' + header + table + footer + '</div></div>');
-    $dirContainer.find('.directions').click(function() {
-      $(this).addClass('opened').removeClass('closed').removeClass('btn');
-      map.panBy(new L.Point(200, 0));
+    $dirContainer.find('.directions').click(function(e) {
+      e.preventDefault();
+      if ($(this).hasClass('closed')) {
+        $(this).addClass('opened').removeClass('closed').removeClass('btn');
+        if (!$(this).hasClass('has-opened')) {
+          map.panBy(new L.Point(200, 0));
+        }
+        $(this).addClass('has-opened');
+      }
+    });
+    $dirContainer.find('a.close').click(function(e) {
+      e.preventDefault();
+      $dirContainer.find('.directions').removeClass('opened').addClass('closed').addClass('btn');
+      e.stopPropagation();
     });
     $('body').append($dirContainer);
   };
