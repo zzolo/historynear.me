@@ -8,7 +8,9 @@ $(document).ready(function() {
   //$(".collapse").collapse('hide');
   $('.geocode-string, .geolocate-user').click(function(e) {
     e.preventDefault();
-    $(".collapse").collapse('hide');
+    if (!$.browser.msie) {
+      $(".collapse").collapse('hide');
+    }
   });
   
   // For now, show the about page by default
