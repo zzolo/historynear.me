@@ -5,7 +5,7 @@
 (function($) {
 $(document).ready(function() {
   // Ensure collapsed items are collapsed
-  $(".collapse").collapse('hide');
+  //$(".collapse").collapse('hide');
   $('.geocode-string, .geolocate-user').click(function(e) {
     e.preventDefault();
     $(".collapse").collapse('hide');

@@ -68,12 +68,6 @@ $(document).ready(function() {
   // Format popup
   function formatPopup(data, closest) {
     var output = '';
-    /* TODO: add direction links
-    var $dLink = $('<span class="label label-success float-right">directions</span>').click(function(e) {
-      map.removeLayer(markers.routeDraw);
-      console.log(data);
-    });
-    */
     
     output += (closest) ? ' <span class="label label-info float-right">closest</span>' : '';
     output += '<h3>' + data.name + '</h3>';
@@ -136,6 +130,7 @@ $(document).ready(function() {
   function getDirections(sLon, sLat, eLon, eLat, callback) {
     // Get directions from mapquest
     loading();
+    
     var directionCall = 'http://open.mapquestapi.com/directions/v0/optimizedroute?&outFormat=json&routeType=pedestrian&timeType=1&enhancedNarrative=false&shapeFormat=raw&locale=en_US&unit=m&from=' + sLat + ',' + sLon + '&to=' + eLat + ',' + eLon + '&callback=?';
     $.getJSON(directionCall, function(data) {
       // Draw route
@@ -226,6 +221,14 @@ $(document).ready(function() {
         else {
           markers.formatted[f].marker.bindPopup(formatPopup(formatted[f], closest));
         }
+        
+        // Get new path on click
+        markers.formatted[f].marker.on('click', function(sLon, sLat, eLon, eLat) {
+          return function () {
+            map.removeLayer(markers.routeDraw);
+            getDirections(sLon, sLat, eLon, eLat, function() { });
+          }
+        }(lon, lat, formatted[f].geo.coordinates[0], formatted[f].geo.coordinates[1]));   
       }
       
       // Get directions from mapquest
