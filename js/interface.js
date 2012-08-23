@@ -15,6 +15,14 @@ $(document).ready(function() {
   
   // For now, show the about page by default
   $('.about-content').click();
+  
+  // Example links
+  $('.example-link').click(function(e) {
+    e.preventDefault();
+    $('#modal-about a.close').click();
+    $('.geocode-value').val($(this).attr('data-example'));
+    $('.geocode-string').click();
+  });
 
 });
 })(jQuery);
